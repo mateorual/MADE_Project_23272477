@@ -65,7 +65,8 @@ class KMLDataExtractor:
         return result
 
     def process_year(self, year: int, url: str) -> pd.DataFrame:
-        print(f"Processing year {year} with URL: {url}")
+        #print(f"Processing year {year} with URL: {url}")
+        print(f"Processing year {year} dataset:")
         root = self.download_kml(url)
         basic_data = self.extract_basic_data(root)
         if not basic_data:
@@ -87,7 +88,7 @@ class KMLDataExtractor:
         
         final_df = pd.DataFrame(processed_data, columns=mapping.headers[1:])
         
-        # Harmonize column names and keep only the desired columns
+        # Ensure consistency across column names and keep only the desired columns
         final_df = final_df.rename(columns={
             "Tipo de Predio": "Predio",
             "Tipo Predio": "Predio",
@@ -105,7 +106,8 @@ class KMLDataExtractor:
             "Longitude", "Latitude"
         ])
         
-        print(f"Processed {len(final_df)} rows for year {year}")
+        #print(f"Processed {len(final_df)} rows for year {year}")
+        print(f"[SUCCESS] Processed {len(final_df)} rows")
         return final_df
 
     def process_multiple_years(self, url_dict: Dict[int, str]) -> pd.DataFrame:
@@ -126,6 +128,7 @@ class KMLDataExtractor:
 
 class KMLMappings:
     # Sample Year Mappings for Sales and Rents
+    # Each mapping is depend on the nature of the dataset, it varies across years
     sales_year_mappings = {
         # Populate with actual mappings as shown previously
         2011: KMLFieldMapping(
