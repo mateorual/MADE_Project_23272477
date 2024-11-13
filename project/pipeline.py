@@ -6,7 +6,7 @@ from datetime import datetime
 from pathlib import Path
 
 # Create the /data directory if it does not exist
-base_path = Path('./data')
+base_path = Path('../data')
 base_path.mkdir(parents=True, exist_ok=True)
 
 # 1. GENERATING RENT AND SALE OFFERS DATABASE (1 database)
