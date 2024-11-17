@@ -1,0 +1,165 @@
+//Exercise-3:
+//  Update and use Jayvee to version 0.6.4
+//
+//  Build an automated data pipeline for the following source:
+//      Meta data: 
+//		https://datacatalog.worldbank.org/search/dataset/0061114/World-Development-Report-2022---Chapter-5-Figures
+//      direct link to data:
+//      https://thedocs.worldbank.org/en/doc/7d852628d96b9411d43e5d36d5dff941-0050062022/original/Graphs-Chapter-5-02082022.xlsx
+//      Do NOT use a local file, always take the data from the link above
+//
+//  Goal:
+//      Extract the data we are interested in
+//          * Extract the sheet called “Figure S5.1.2” from the Excel file
+//          * Ignore the figure itself and only keep the table with actual data (from cell P2 to S45)
+//      Rename header columns: “ISO3” to "Country Code", “GDP per capita (US$, thousands)” to "GDP per Capita",
+//       “Share of government sustainable bonds" to "Bond Issuance Share"    
+//          * “Economy” does not have to be renamed
+//      Validate data, drop all invalid rows
+//          * "Country Code" must be a valid ISO 3166-1 alpha-3 country code (must not be empty)
+//          * "GDP per Capita" must be a positive decimal (must not be empty)
+//          * "Bond Issuance Share" must be a decimal between 0 and 1 (both values included, must not be empty)
+//      Assign fitting built-in SQLite types (e.g., BIGINT, TEXT or FLOAT) to all columns
+//      Write data into a SQLite database called “country-stats.sqlite”
+//          * One table “bondIssuance”, containing the data about bond issuance share 
+//            (columns "Country Code" and "Bond Issuance Share")
+//          * One table “gdpPerCapita”, containing the data about GDP per capita 
+//            (columns "Country Code" and "GDP per Capita")
+//
+//  Submit as  /exercises/exercise3.jv
+
+
+pipeline GreenCountriesPipeline {
+
+    // Pipeline structure
+    // Table 1: “bondIssuance”
+    GreenCountriesDataExtractor
+        -> GreenCountriesXLSXInterpreter_Bond
+        -> GreenCountriesSheetPicker_Bond
+        -> GreenCountriesHeaderWriter_1_Bond // A single header column
+        -> GreenCountriesHeaderWriter_2_Bond // Two header columns in sequence
+        -> GreenCountriesCellRangeSelector_Bond
+        -> GreenCountries_BondTableInterpreter
+        -> GreenCountries_BondSQLiteLoader;
+    
+    // Table 2: “gdpPerCapita”
+    GreenCountriesDataExtractor
+        -> GreenCountriesXLSXInterpreter_GDP
+        -> GreenCountriesSheetPicker_GDP
+        -> GreenCountriesHeaderWriter_1_GDP // A single header column
+        -> GreenCountriesHeaderWriter_2_GDP // Two header columns in sequence
+        -> GreenCountriesCellRangeSelector_GDP
+        -> GreenCountries_GDPTableInterpreter
+        -> GreenCountries_GDPSQLiteLoader;
+
+
+    // BLOCK DEFINITONS
+    // 1. Extract the Excel file from the given link to the data:
+    block  GreenCountriesDataExtractor oftype HttpExtractor{
+        url: "https://thedocs.worldbank.org/en/doc/7d852628d96b9411d43e5d36d5dff941-0050062022/original/Graphs-Chapter-5-02082022.xlsx";
+    }
+
+
+    // 2. Interpret the file as XLSX
+    block GreenCountriesXLSXInterpreter_Bond oftype XLSXInterpreter { }
+    block GreenCountriesXLSXInterpreter_GDP oftype XLSXInterpreter { }
+
+    // 3. Pick the sheet of interest: “Figure S5.1.2” from Excel file
+    block GreenCountriesSheetPicker_Bond oftype SheetPicker {
+        sheetName: "Figure S5.1.2";
+    }
+    block GreenCountriesSheetPicker_GDP oftype SheetPicker {
+        sheetName: "Figure S5.1.2";
+    }
+
+
+    // 4. Select range of cells of interest "P2:S45" (data table)
+    block GreenCountriesCellRangeSelector_Bond oftype CellRangeSelector {
+        select: range P2:S45;
+    }
+    block GreenCountriesCellRangeSelector_GDP oftype CellRangeSelector {
+        select: range P2:S45;
+    }
+
+    // 5. Rename header columns to ["Country Code", "GDP per Capita", "Bond Issuance Share" ]
+    block GreenCountriesHeaderWriter_1_Bond oftype CellWriter {
+        at: cell P2;
+        write: ["Country Code"];
+    }
+    block GreenCountriesHeaderWriter_2_Bond oftype CellWriter {
+        at: range R2:S2;
+        write: ["GDP per Capita","Bond Issuance Share" ];
+    }
+
+    block GreenCountriesHeaderWriter_1_GDP oftype CellWriter {
+        at: cell P2;
+        write: ["Country Code"];
+    }
+    block GreenCountriesHeaderWriter_2_GDP oftype CellWriter {
+        at: range R2:S2;
+        write: ["GDP per Capita","Bond Issuance Share" ];
+    }
+
+
+    // 6. Create custom data types: "CountryCode", "GDPperCapita" and "BondIssuanceShare" with their constraints
+    // "CountryCode": three-letter codes assigned to countries
+    constraint ISO oftype RegexConstraint{
+        regex: /^[A-Z]{3}$/;
+    }
+
+    valuetype CountryCode oftype text{
+        constraints: [
+            ISO];
+    }
+
+    // "GDPperCapita":
+    constraint PositiveValue on decimal:
+        value >= 0;      
+
+    valuetype GDPperCapita oftype decimal {
+        constraints: [ PositiveValue ];
+    }
+
+    // "BondIssuanceShare"
+    constraint BondRange oftype RangeConstraint {
+        lowerBound: 0;
+        lowerBoundInclusive: true;
+        upperBound: 1;
+        upperBoundInclusive: true;
+    }
+
+    valuetype BondIssuanceShare oftype decimal {
+        constraints: [ BondRange ];
+    }
+
+
+    // 7. Interpret data as table (two separate tables “bondIssuance” and “gdpPerCapita”)
+    block GreenCountries_BondTableInterpreter oftype TableInterpreter {
+        header: true;
+        columns: [
+            "Country Code" oftype CountryCode, // Custom data type
+            "Bond Issuance Share" oftype BondIssuanceShare // Custom data type
+        ];
+    }
+
+    block GreenCountries_GDPTableInterpreter oftype TableInterpreter {
+        header: true;
+        columns: [
+            "Country Code" oftype CountryCode, // Custom data type
+            "GDP per Capita" oftype GDPperCapita // Custom data type
+        ];
+    }
+
+
+    // 8. Load data into a SQLite database (two separate tables “bondIssuance” and “gdpPerCapita”)
+    block GreenCountries_BondSQLiteLoader oftype SQLiteLoader {
+        table: "bondIssuance";
+        file: "./country-stats.sqlite";
+    }
+
+    block GreenCountries_GDPSQLiteLoader oftype SQLiteLoader {
+        table: "gdpPerCapita";
+        file: "./country-stats.sqlite";
+    }
+    
+}   
