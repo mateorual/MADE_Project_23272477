@@ -76,12 +76,15 @@ There are datasets of sales offers for the period 2008-2022, in this case the re
 <!-- List of work packages ordered sequentially, each pointing to an issue with more details. -->
 
 1. Datasets selection. [#1][i1]
-2. Building an automated data pipeline. [#2][i2]
-3. Data report.
-4. Data Profiling / Exploratory Data Analysis (EDA) and Feature Engineering
-5. Statistical Modeling or implementation of a suitable technique/method to derive conclusions.
+2. Building an automated data pipeline (ETL). [#2][i2]
+3. Data report. [#3][i3]
+4. Data Profiling / Exploratory Data Analysis (EDA) and Feature Engineering. [#4][i4]
+5. Statistical Modeling or implementation of a suitable technique/method to derive conclusions. [#5][i5]
 6. Model Evaluation: interpretation and insights.
 7. Reporting on challenges-findings / Presentation
 
 [i1]: https://github.com/mateorual/MADE_Project_23272477/issues/1 
 [i2]: https://github.com/mateorual/MADE_Project_23272477/issues/2
+[i3]: https://github.com/mateorual/MADE_Project_23272477/issues/3
+[i4]: https://github.com/mateorual/MADE_Project_23272477/issues/4
+[i5]: https://github.com/mateorual/MADE_Project_23272477/issues/5
