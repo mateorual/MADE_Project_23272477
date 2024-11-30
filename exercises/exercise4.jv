@@ -1,0 +1,146 @@
+//Exercise-4:
+//  Build an automated data pipeline for the following source:
+//		https://mobilithek.info/offers/526718847762190336
+//      Direct download link: https://www.mowesta.com/data/measure/mowesta-dataset-20221107.zip
+//
+//  Goal:
+//      Download and unzip data
+//          * Use the “data.csv” in the zip file
+//          * We are only interested in “Vogelsang”, valid stadtteil start with "Vogelsang"
+//      Reshape data
+//          * Only use the columns "Geraet", "Hersteller", "Model", "Monat", "Temperatur in °C (DWD)", "Batterietemperatur in °C"
+//          * There can be multiple temperature measurements per row
+//              - You can ignore all columns to the right of the first “​​Geraet aktiv”
+//          * Translate/rename column headers from German to English:
+//              - “Geraet” to “id”
+//              - “Hersteller” to “producer”
+//              - “Model” to “model”  
+//              - “Monat” to “month”
+//              - “Temperatur in °C (DWD)” to “temperature”
+//              - “Batterietemperatur in °C” to “battery_temperature”
+//      Transform data
+//          * Transform temperatures in Celsius to Fahrenheit (formula is (TemperatureInCelsius * 9/5) + 32) in place (keep the same column names)
+//              - For the columns temperature and battery_temperature
+//      Validate data
+//          * Use validations as you see fit, e.g., for “Geraet” to be an id over 0
+//
+//      Use fitting SQLite types (e.g., BIGINT, TEXT or FLOAT) for all columns
+//      Write data into a SQLite database called “temperatures.sqlite”, in the table “temperatures”
+//
+//  Use Jayvee version 0.6.4
+//  Submit as  /exercises/exercise4.jv
+
+
+pipeline TemperaturesPipeline {
+
+    // Pipeline structure
+    TemperaturesHttpExtractor 
+        -> TemperaturesArchiveInterpreter
+        -> TemperaturesFilePicker 
+        -> TemperaturesTextFileInterpreter
+        -> TemperaturesCSVInterpreter
+        -> TemperaturesCellWriter_1
+        -> TemperaturesCellWriter_2
+        -> TemperaturesTableInterpreter
+        -> temperatureToFahrenheit
+        -> battery_temperatureToFahrenheit
+        -> TemperaturesDatabaseLoader;
+
+    // BLOCK DEFINITONS
+    // 1. Get data from the given URL
+    block TemperaturesHttpExtractor oftype HttpExtractor{
+        url: "https://www.mowesta.com/data/measure/mowesta-dataset-20221107.zip";
+    }
+
+    // 2. Access .zip file
+    block TemperaturesArchiveInterpreter oftype ArchiveInterpreter{
+        archiveType: "zip";
+    }
+
+    // 3. Select file of interest inside the .zip
+    block TemperaturesFilePicker oftype FilePicker{
+        path:'/data.csv';
+    }
+
+    // 4. 
+    block TemperaturesTextFileInterpreter oftype TextFileInterpreter{}
+
+    // 5. 
+    block TemperaturesCSVInterpreter oftype CSVInterpreter{
+        delimiter: ";";
+    }
+
+    // 6. 
+    // 6.1 Rename column headers -> A: Geraet, B: Hersteller, C: Model, D: Monat, E: Temperatur in °C (DWD) 
+    block TemperaturesCellWriter_1 oftype CellWriter{
+        at: range A1:E1;
+        write: ["id", "producer", "model", "month", "temperature"];
+    }
+    // 6.2 Rename column header -> J: Batterietemperatur in °C 
+    block TemperaturesCellWriter_2 oftype CellWriter{
+        at: cell J1;
+        write:["battery_temperature"];
+    }
+
+    // 7. Transform temperatures: °C -> °F [columns "temperature" and "battery_temperature"]
+    transform Conversion_CelsiusToFahrenheit{
+        from Celsius oftype decimal;
+        to Fahrenheit oftype decimal;
+
+        Fahrenheit: (Celsius * 9/5) + 32;
+    }
+    
+    block temperatureToFahrenheit oftype TableTransformer {
+        inputColumns: ['temperature'];
+        outputColumn: 'temperature';
+        uses: Conversion_CelsiusToFahrenheit;
+    }
+
+    block battery_temperatureToFahrenheit oftype TableTransformer {
+        inputColumns: ['battery_temperature'];
+        outputColumn: 'battery_temperature';
+        uses: Conversion_CelsiusToFahrenheit;
+    }
+
+    // 8. Custom data types
+    // id:
+    constraint PositiveValue on integer:
+        value > 0;
+    
+    valuetype id oftype integer {
+        constraints: [PositiveValue];
+    }
+    // month:
+    constraint Range oftype RangeConstraint {
+        lowerBound: 1;
+        lowerBoundInclusive: true;
+        upperBound: 12;
+        upperBoundInclusive: true;
+    }
+
+    valuetype month oftype integer {
+        constraints:[Range];
+    }
+
+    // 9. Table Interpreter with fitting value types
+    block TemperaturesTableInterpreter oftype TableInterpreter {
+        header: true;
+        columns: [
+            "id" oftype id,
+            "producer" oftype text,
+            "model" oftype text,
+            "month" oftype month,
+            "temperature" oftype decimal,
+            "battery_temperature" oftype decimal
+        ];
+    }
+
+    // 10. Generate the SQLITE database 
+    block TemperaturesDatabaseLoader oftype SQLiteLoader {
+        table: "temperatures";
+        file: "./temperatures.sqlite";
+    }
+
+
+}
+
