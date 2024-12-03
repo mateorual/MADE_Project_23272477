@@ -1,0 +1,19 @@
+# Required third-party libraries
+pandas
+requests
+typing_extensions
+tqdm
+sqlalchemy
+prettytable
+
+# Modules from Python's standard library (no installation required)
+# xml.etree.ElementTree
+# sqlite3
+# pathlib
+# datetime
+# os
+# sys
+# unittest
+# io.StringIO
+# re
+# dataclasses
