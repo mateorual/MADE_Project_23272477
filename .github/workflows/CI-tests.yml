@@ -13,13 +13,16 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+      with:
+          path: main
 
     # Install python
     - name: Set up Python 3.11
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
-
+    
+    # Run tests (installation of dependencies is in tests.sh)
     - name: Tests feedback
       run: |
         chmod +x project/tests.sh
