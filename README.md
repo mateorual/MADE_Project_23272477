@@ -4,7 +4,7 @@
 > *This repository contains data engineering and data science projects and exercises using open data sources as part of the Methods of Advanced Data Engineering (MADE) course, taught by the FAU Chair for [Open-Source Software (OSS)](https://oss.cs.fau.de/) in the Winter 24/25 semester. This repo has been forked from the [made-template repository](https://github.com/jvalue/made-template) repository.*
 
 <figure>
-    <img src="[https://upload.wikimedia.org/wikipedia/commons/e/e3/Medellin_skyline.jpg](https://www.medellinadvisors.com/wp-content/uploads/2021/04/urban-transformation-in-medellin-768x400.jpg)" alt="Medellín Skyline" style="width:100%">
+    <img src="cover_image.jpg" alt="Medellín Skyline" style="width:100%">
     <figcaption>Image credit: www.medellinadvisors.com </figcaption>
 </figure>
 
@@ -37,10 +37,10 @@ For a more detailed explanation of the sources used, including metadata and corr
 This project uses data sourced from the following organizations:  
 
 1. [MEData](https://www.medata.gov.co/)  
-   Data used under the [Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/) license.  
+   Data used under the [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) license.  
 
 2. [Medellín Real Estate Observatory (OIME)](https://www.medellin.gov.co/es/secretaria-gestion-y-control-territorial/oime/)  
-   Data used under the [Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/) license.  
+   Data used under the [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) license.  
 
 Changes and adaptations have been made to the original data for use in this project. The derived works are also licensed under the [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) license.  
 
