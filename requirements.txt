@@ -1,0 +1,16 @@
+# Python version
+python_version == 3.11
+
+# Required packages
+pandas
+requests
+xmltodict
+sqlite3
+matplotlib
+seaborn
+numpy
+scipy
+statsmodels
+
+
+
