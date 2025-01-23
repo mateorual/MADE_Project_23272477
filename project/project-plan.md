@@ -2,12 +2,12 @@
 
 ## Title
 <!-- Give your project a short title. -->
-### The Cost of Popularity: Analyzing Tourism's Effect on Medellín's Housing Market
+### The Cost of Popularity: Analyzing Tourism's Effect on Medellín's Housing Market (2011-2021)
 
 ## Main Question
 
 <!-- Think about one main question you want to answer based on the data. -->
-1. To what extent do domestic and inbound tourismtrends correlate with fluctuations in housing marketprices in Medellín, Colombia?
+1. To what extent do domestic and inbound (foreign) tourism trends correlate with fluctuations in housing marketprices in Medellín, Colombia?
 2. What is the impact of tourism (domestic and inbound) on housing sales and rental prices in Medellin, Colombia
 
 ## Description
@@ -80,11 +80,13 @@ There are datasets of sales offers for the period 2008-2022, in this case the re
 3. Data report. [#3][i3]
 4. Data Profiling / Exploratory Data Analysis (EDA) and Feature Engineering. [#4][i4]
 5. Statistical Modeling or implementation of a suitable technique/method to derive conclusions. [#5][i5]
-6. Model Evaluation: interpretation and insights.
-7. Reporting on challenges-findings / Presentation
+6. Model Evaluation: interpretation and insights. [#6][i6]
+7. Reporting on challenges-findings / Presentation [#7][i7]
 
 [i1]: https://github.com/mateorual/MADE_Project_23272477/issues/1 
 [i2]: https://github.com/mateorual/MADE_Project_23272477/issues/2
 [i3]: https://github.com/mateorual/MADE_Project_23272477/issues/3
 [i4]: https://github.com/mateorual/MADE_Project_23272477/issues/4
 [i5]: https://github.com/mateorual/MADE_Project_23272477/issues/5
+[i6]: https://github.com/mateorual/MADE_Project_23272477/issues/6
+[i7]: https://github.com/mateorual/MADE_Project_23272477/issues/7

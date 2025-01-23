@@ -135,7 +135,10 @@ To run tests, run the following command
 ---
 ## Author  
 :computer: **Mateo Ruiz Alvarez**  :star: contact me: mateo.a.ruiz@fau.de
-
+#### [Optional] 🌟 Give a Star! 😄
+1. If you like this project, please ⭐ it to show your support!
+2. Give the [Jayvee project](https://github.com/jvalue/jayvee) a  GitHub star. ⭐
+   
 ---
 
 ## Exercises
